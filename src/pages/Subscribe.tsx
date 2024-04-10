@@ -13,7 +13,7 @@ const validationSchema = Yup.object().shape({
   location: Yup.string().required("Location is required"),
 });
 
-function Subcribe() {
+function Subscribe() {
   const navigate = useNavigate();
 
   const formik = useFormik({
@@ -94,4 +94,4 @@ function Subcribe() {
   );
 }
 
-export default Subcribe;
+export default Subscribe;

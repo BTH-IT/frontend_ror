@@ -1,4 +1,5 @@
 import moment from "moment";
+import { IForecast } from "../types/forecast";
 
 export function getLocalStorage(key: string): any {
   try {
@@ -27,4 +28,36 @@ export function checkIsDay(localtime: string) {
   const isToday = dateToCheck.isSame(new Date(), "day");
 
   return isToday;
+}
+
+export function parseLocaltime(localtime: string) {
+  const dateToCheck = moment(localtime, "YYYY-MM-DD HH:mm");
+
+  return dateToCheck.format("YYYY-MM-DD");
+}
+
+export function updateHistory(data: IForecast) {
+  const forecastWeathers = getLocalStorage("forecastWeathers");
+
+  if (forecastWeathers && typeof forecastWeathers === "object") {
+    forecastWeathers.histories.push({
+      current: data.current,
+      location: data.location,
+    });
+
+    setLocalStorage("forecastWeathers", {
+      ...forecastWeathers,
+      histories: forecastWeathers.histories,
+    });
+  } else {
+    setLocalStorage("forecastWeathers", {
+      histories: [
+        {
+          current: data.current,
+          location: data.location,
+        },
+      ],
+      time: parseLocaltime(data.location.localtime),
+    });
+  }
 }

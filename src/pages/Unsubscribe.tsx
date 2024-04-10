@@ -12,7 +12,7 @@ const validationSchema = Yup.object().shape({
     .required("Email is required"),
 });
 
-function Subcribe() {
+function Subscribe() {
   const navigate = useNavigate();
 
   const formik = useFormik({
@@ -72,4 +72,4 @@ function Subcribe() {
   );
 }
 
-export default Subcribe;
+export default Subscribe;

@@ -1,14 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import weatherService from "./services/weatherService";
 import { IForecast } from "./types/forecast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Separate from "./components/Separate";
 import Button from "./components/Button";
 import ForecastCards from "./components/ForecastCards";
 import Input from "./components/Input";
-import { checkIsDay, getLocalStorage, setLocalStorage } from "./utils";
+import {
+  checkIsDay,
+  getLocalStorage,
+  setLocalStorage,
+  updateHistory,
+} from "./utils";
+import WeatherBanner from "./components/WeatherBanner";
 
 function App() {
+  const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isLoadMore, setIsLoadMore] = useState<boolean>(false);
   const [forecastWeather, setForecastWeather] = useState<IForecast | null>(
@@ -28,6 +35,8 @@ function App() {
     }
 
     const storedForecastWeather: IForecast = getLocalStorage("forecastWeather");
+
+    // Nếu chưa qua ngày mới thì lấy lại những cái cũ
     if (
       storedForecastWeather &&
       checkIsDay(storedForecastWeather.location.localtime)
@@ -36,7 +45,9 @@ function App() {
       return;
     }
 
+    // qua ngày mới sẽ refresh lại toàn bộ
     setLocalStorage("forecastWeather", null);
+    setLocalStorage("forecastWeathers", null);
     getForecastWeather();
   }, []);
 
@@ -49,6 +60,9 @@ function App() {
 
         setForecastWeather(data);
         setLocalStorage("forecastWeather", data);
+
+        updateHistory(data);
+
         inputRef.current.value = "";
       } catch (error) {
         console.log(error);
@@ -70,6 +84,8 @@ function App() {
 
             setForecastWeather(data);
             setLocalStorage("forecastWeather", data);
+
+            updateHistory(data);
           } catch (error) {
             console.log(error);
           }
@@ -87,8 +103,15 @@ function App() {
     <div className="h-full">
       <div className="grid gap-2 grid-cols-12 mt-6 p-4">
         <div className="col-span-12 md:col-span-4 p-2 flex flex-col gap-3">
-          <label htmlFor="search" className="font-medium text-xl">
-            Enter a City Name
+          <label htmlFor="search" className="flex justify-between items-center">
+            <span className="font-medium text-xl ">Enter a City Name</span>
+            <Link
+              to="/history"
+              className="border border-Blue transition-all px-3 py-1 text-center rounded-md font-thin text-md text-Blue mt-2 hover:bg-Blue hover:text-white"
+              onClick={() => navigate("/history", { replace: true })}
+            >
+              History search
+            </Link>
           </label>
           <Input
             type="text"
@@ -105,14 +128,14 @@ function App() {
           </Button>
           <div className="flex gap-2 justify-center items-center">
             <Link
-              to="/subcribe"
+              to="/subscribe"
               className="border border-Blue transition-all p-3 text-center w-full rounded-md font-thin text-md text-Blue mt-2"
               onClick={() => setIsLoadMore(!isLoadMore)}
             >
               Subcribe Email
             </Link>
             <Link
-              to="/unsubcribe"
+              to="/unsubscribe"
               className="border border-[#6C757D] transition-all p-3 text-center w-full rounded-md font-thin text-md text-[#6C757D] mt-2"
               onClick={() => setIsLoadMore(!isLoadMore)}
             >
@@ -121,33 +144,14 @@ function App() {
           </div>
         </div>
         <div className="col-span-12 md:col-span-8 p-2">
-          <div className="rounded-md bg-Blue flex items-center justify-between text-white p-4">
-            <div className="flex flex-col gap-2">
-              <span className="font-medium text-xl">
-                {forecastWeather?.location.name} (
-                {forecastWeather?.location.localtime.split(" ")[0]})
-              </span>
-              <span className="font-light text-md">
-                Temperature: {forecastWeather?.current.temp_c}°C
-              </span>
-              <span className="font-light text-md">
-                Wind: {forecastWeather?.current.wind_mph}M/S
-              </span>
-              <span className="font-light text-md">
-                Humidity: {forecastWeather?.current.humidity}%
-              </span>
-            </div>
-            <div className="flex flex-col gap-2 items-center">
-              <img
-                src={forecastWeather?.current.condition.icon}
-                alt="image"
-                className="w-[75px] h-[50px] object-cover"
-              />
-              <span className="font-light text-md">
-                {forecastWeather?.current.condition.text}
-              </span>
-            </div>
-          </div>
+          {forecastWeather ? (
+            <WeatherBanner
+              location={forecastWeather.location}
+              current={forecastWeather.current}
+            />
+          ) : (
+            <></>
+          )}
           <div className="next">
             <h2 className="font-medium my-5 text-2xl">
               4-Day Forecast Or More
