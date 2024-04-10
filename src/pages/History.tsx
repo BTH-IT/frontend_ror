@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useState } from "react";
 import { getLocalStorage } from "../utils";
 import { IHistory } from "../types/history";
 import WeatherBanner from "../components/WeatherBanner";
 
 const History = () => {
-  const [data, setData] = useState<IHistory | null>(
+  const [data, _] = useState<IHistory | null>(
     getLocalStorage("forecastWeathers")
   );
 
