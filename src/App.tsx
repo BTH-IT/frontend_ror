@@ -145,28 +145,30 @@ function App() {
         </div>
         <div className="col-span-12 md:col-span-8 p-2">
           {forecastWeather ? (
-            <WeatherBanner
-              location={forecastWeather.location}
-              current={forecastWeather.current}
-            />
+            <>
+              <WeatherBanner
+                location={forecastWeather.location}
+                current={forecastWeather.current}
+              />
+              <div className="next">
+                <h2 className="font-medium my-5 text-2xl">
+                  4-Day Forecast Or More
+                </h2>
+                <ForecastCards
+                  isLoadMore={isLoadMore}
+                  forecastWeather={forecastWeather}
+                />
+                <Button
+                  onClick={() => setIsLoadMore(!isLoadMore)}
+                  className="!text-[#6C757D] !border-[#6C757D] bg-transparent transition-all max-w-[30%] mt-10 mx-auto block hover:bg-[#6C757D] hover:!text-white"
+                >
+                  {isLoadMore ? "Hide" : "Load More"}
+                </Button>
+              </div>
+            </>
           ) : (
-            <></>
+            <p className="text-center font-medium text-3xl">Loading....</p>
           )}
-          <div className="next">
-            <h2 className="font-medium my-5 text-2xl">
-              4-Day Forecast Or More
-            </h2>
-            <ForecastCards
-              isLoadMore={isLoadMore}
-              forecastWeather={forecastWeather}
-            />
-            <Button
-              onClick={() => setIsLoadMore(!isLoadMore)}
-              className="!text-[#6C757D] !border-[#6C757D] bg-transparent transition-all max-w-[30%] mt-10 mx-auto block hover:bg-[#6C757D] hover:!text-white"
-            >
-              {isLoadMore ? "Hide" : "Load More"}
-            </Button>
-          </div>
         </div>
       </div>
     </div>
