@@ -5,6 +5,7 @@ import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
 import weatherService from "../services/weatherService";
 import { toast } from "react-toastify";
+import { AxiosError } from "axios";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -30,8 +31,8 @@ function Subscribe() {
           replace: true,
         });
       } catch (error) {
-        if (error instanceof Error) {
-          toast.error(error.message);
+        if (error instanceof AxiosError) {
+          toast.error(error.response?.data.message);
         } else {
           toast.error("An error occurred");
         }
@@ -40,7 +41,7 @@ function Subscribe() {
   });
 
   return (
-    <div className="max-w-[1000px] mx-auto mt-6">
+    <div className="max-w-[1000px] mx-auto mt-6 p-4">
       <h1 className="uppercase font-semibold text-3xl text-center">
         Unsubcribe
       </h1>

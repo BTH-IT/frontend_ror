@@ -5,6 +5,7 @@ import Button from "../components/Button";
 import weatherService from "../services/weatherService";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { AxiosError } from "axios";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -35,8 +36,8 @@ function Subscribe() {
           replace: true,
         });
       } catch (error) {
-        if (error instanceof Error) {
-          toast.error(error.message);
+        if (error instanceof AxiosError) {
+          toast.error(error.response?.data.message);
         } else {
           toast.error("An error occurred");
         }
